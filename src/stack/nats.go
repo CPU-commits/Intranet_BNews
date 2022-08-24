@@ -12,6 +12,12 @@ type NatsClient struct {
 	conn *nats.Conn
 }
 
+// Nats Golang
+type NatsGolangReq struct {
+	Pattern string      `json:"pattern"`
+	Data    interface{} `json:"data"`
+}
+
 var settingsData = settings.GetSettings()
 
 func newConnection() *nats.Conn {

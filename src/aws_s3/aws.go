@@ -49,23 +49,24 @@ func (aws_s3 *AWSS3) DeleteFile(key string) error {
 	return nil
 }
 
-func (aws_s3 *AWSS3) UploadFile(file *multipart.FileHeader) (*s3manager.UploadOutput, error) {
+func (aws_s3 *AWSS3) UploadFile(file *multipart.FileHeader) (*s3manager.UploadOutput, string, error) {
 	ext := strings.Split(file.Filename, ".")
 	uploader := s3manager.NewUploader(aws_s3.sess)
 	// To buffer
 	openFile, err := file.Open()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, openFile); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	fileName := uuid.New()
+	key := fmt.Sprintf("news/%s.%s", fileName.String(), ext[len(ext)-1])
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(settingsData.AWS_BUCKET),
-		Key:    aws.String(fmt.Sprintf("news/%s.%s", fileName.String(), ext[len(ext)-1])),
+		Key:    aws.String(key),
 		Body:   buf,
 	})
-	return result, err
+	return result, key, err
 }

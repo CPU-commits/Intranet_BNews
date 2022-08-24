@@ -15,7 +15,7 @@ const NEWS_COLLECTION = "news"
 
 type News struct {
 	ID         primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
-	AuthorId   primitive.ObjectID `json:"author_id" bson:"author_id"`
+	AuthorId   primitive.ObjectID `json:"author_id,omitempty" bson:"author_id,omitempty"`
 	Title      string             `json:"title" bson:"title"`
 	Headline   string             `json:"headline" bson:"headline"`
 	Body       string             `json:"body" bson:"body"`
@@ -55,7 +55,6 @@ func init() {
 	var jsonSchema = bson.M{
 		"bsonType": "object",
 		"required": []string{
-			"author_id",
 			"title",
 			"headline",
 			"body",
@@ -102,9 +101,14 @@ func (news *NewsModel) Use() *mongo.Collection {
 }
 
 func (news *NewsModel) NewModel(data forms.NewsDTO, imageId, slugNews, typeNews, authorID string) (*News, error) {
+	var authorObjectId primitive.ObjectID
 	authorObjectId, err := primitive.ObjectIDFromHex(authorID)
 	if err != nil {
-		return &News{}, err
+		if authorID == "" {
+			authorObjectId = primitive.NilObjectID
+		} else {
+			return &News{}, err
+		}
 	}
 	imgObjectId, err := primitive.ObjectIDFromHex(imageId)
 	if err != nil {
