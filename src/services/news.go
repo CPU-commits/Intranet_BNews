@@ -451,7 +451,13 @@ func (n *NewsService) UpdateNews(
 		}
 	}
 	// Verify identity
-	if findNews.Type == "global" && claims.UserType != models.DIRECTIVE && claims.UserType != models.DIRECTOR || findNews.Type == "student" && findNews.Type != models.STUDENT_DIRECTIVE {
+	if findNews.Type == "global" && (claims.UserType != models.DIRECTIVE && claims.UserType != models.DIRECTOR) {
+		return nil, &ErrorRes{
+			Err:        fmt.Errorf("Unauthorized"),
+			StatusCode: http.StatusUnauthorized,
+		}
+	}
+	if findNews.Type == "student" && claims.UserType != models.STUDENT_DIRECTIVE {
 		return nil, &ErrorRes{
 			Err:        fmt.Errorf("Unauthorized"),
 			StatusCode: http.StatusUnauthorized,

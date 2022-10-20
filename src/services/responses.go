@@ -20,7 +20,7 @@ type Image struct {
 }
 
 type NewsResponse struct {
-	Author     models.User        `json:"author" bson:"author"`
+	Author     models.User        `json:"author,omitempty" bson:"author,omitempty"`
 	Headline   string             `json:"headline" bson:"headline"`
 	Title      string             `json:"title" bson:"title"`
 	Image      Image              `json:"image" bson:"image"`

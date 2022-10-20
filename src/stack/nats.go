@@ -38,7 +38,7 @@ func (nats *NatsClient) Publish(channel string, message []byte) {
 }
 
 func (nats *NatsClient) Request(channel string, data []byte) (*nats.Msg, error) {
-	msg, err := nats.conn.Request(channel, data, time.Second*5)
+	msg, err := nats.conn.Request(channel, data, time.Second*15)
 	return msg, err
 }
 

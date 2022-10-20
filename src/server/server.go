@@ -37,17 +37,29 @@ func Init() {
 		AllowHeaders: []string{"*"},
 	}))
 	// Routes
-	news := router.Group("/api/news", middlewares.JWTMiddleware(), middlewares.RolesMiddleware())
+	news := router.Group("/api/news", middlewares.JWTMiddleware())
 	{
 		// Init controllers
 		newsController := new(controllers.NewsController)
 		// Define routes
 		news.GET("/get_news", newsController.GetNews)
 		news.GET("/get_single_news/:slug", newsController.GetSingleNews)
-		news.POST("/new_news", newsController.NewNews)
+		news.POST(
+			"/new_news",
+			middlewares.RolesMiddleware(),
+			newsController.NewNews,
+		)
 		news.POST("/like_news/:id", newsController.LikeNews)
-		news.PUT("/update_news/:id", newsController.UpdateNews)
-		news.DELETE("/delete_news/:id", newsController.DeleteNews)
+		news.PUT(
+			"/update_news/:id",
+			middlewares.RolesMiddleware(),
+			newsController.UpdateNews,
+		)
+		news.DELETE(
+			"/delete_news/:id",
+			middlewares.RolesMiddleware(),
+			newsController.DeleteNews,
+		)
 	}
 	// No route
 	router.NoRoute(func(ctx *gin.Context) {
