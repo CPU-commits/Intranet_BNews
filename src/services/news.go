@@ -294,7 +294,7 @@ func (n *NewsService) GetNews(
 	if err != nil {
 		return nil, 0, &ErrorRes{
 			Err:        err,
-			StatusCode: http.StatusBadRequest,
+			StatusCode: http.StatusServiceUnavailable,
 		}
 	}
 	if newsData == nil {

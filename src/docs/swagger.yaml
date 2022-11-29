@@ -1,0 +1,386 @@
+basePath: /api/news
+consumes:
+- application/json
+definitions:
+  forms.UpdateNewsDTO:
+    properties:
+      body:
+        type: string
+      headline:
+        maxLength: 500
+        minLength: 3
+        type: string
+      img:
+        format: binary
+        type: string
+      title:
+        maxLength: 100
+        minLength: 3
+        type: string
+    type: object
+  models.User:
+    properties:
+      _id:
+        example: 638660ca141aa4ee9faf07e8
+        type: string
+        x-omitempty: true
+      first_lastname:
+        example: Rojas
+        type: string
+        x-omitempty: true
+      name:
+        example: Karen
+        type: string
+        x-omitempty: true
+      second_lastname:
+        example: Valdes
+        type: string
+        x-omitempty: true
+    type: object
+  res.Response:
+    properties:
+      body:
+        additionalProperties: true
+        type: object
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  services.Image:
+    properties:
+      _id:
+        example: 638660ca141aa4ee9faf07e8
+        type: string
+      key:
+        example: $dsK2!1
+        type: string
+      url:
+        example: https://repository.com/file/$dsK2!1
+        type: string
+    type: object
+  services.NewsResponse:
+    properties:
+      _id:
+        example: 638660ca141aa4ee9faf07e8
+        type: string
+      author:
+        $ref: '#/definitions/models.User'
+        x-omitempty: true
+      body:
+        example: This is a body...
+        type: string
+      headline:
+        example: Example...
+        type: string
+      image:
+        $ref: '#/definitions/services.Image'
+      like:
+        type: boolean
+      likes:
+        example: 10
+        type: integer
+      status:
+        type: boolean
+      title:
+        example: Title !!
+        type: string
+      type:
+        example: global
+        type: string
+      update_date:
+        example: "2022-09-21T20:10:23.309+00:00"
+        type: string
+      upload_date:
+        example: "2022-09-21T20:10:23.309+00:00"
+        type: string
+      url:
+        example: title
+        type: string
+    type: object
+  smaps.NewsMap:
+    properties:
+      news:
+        items:
+          $ref: '#/definitions/services.NewsResponse'
+        type: array
+      total:
+        example: 15
+        type: integer
+    type: object
+  smaps.SingleNewsMap:
+    properties:
+      news:
+        $ref: '#/definitions/services.NewsResponse'
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API Server News service
+  license:
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: News API
+  version: "1.0"
+paths:
+  /delete_news/{idNews}:
+    delete:
+      consumes:
+      - application/json
+      description: Update news
+      parameters:
+      - description: MongoID
+        in: path
+        name: idNews
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.Response'
+        "400":
+          description: Bad path || body param
+          schema:
+            $ref: '#/definitions/res.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/res.Response'
+        "404":
+          description: Noticia no encontrada
+          schema:
+            $ref: '#/definitions/res.Response'
+      summary: Update news
+      tags:
+      - news
+  /get_news:
+    get:
+      consumes:
+      - application/json
+      description: Get news
+      parameters:
+      - description: Default 0
+        in: query
+        name: skip
+        type: integer
+      - description: Defaul false
+        in: query
+        name: total
+        type: boolean
+      - description: 'Default global -> Values: global || student'
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/res.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/smaps.NewsMap'
+              type: object
+        "400":
+          description: Bad query param
+          schema:
+            $ref: '#/definitions/res.Response'
+        "503":
+          description: StatusServiceUnavailable
+          schema:
+            $ref: '#/definitions/res.Response'
+      summary: Get news
+      tags:
+      - news
+  /get_single_news/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: Get a single news
+      parameters:
+      - description: News slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/res.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/smaps.SingleNewsMap'
+              type: object
+        "401":
+          description: No tienes acceso a esta noticia
+          schema:
+            $ref: '#/definitions/res.Response'
+        "404":
+          description: No pudimos encontrar la noticia...
+          schema:
+            $ref: '#/definitions/res.Response'
+        "410":
+          description: Esta noticia ya no está disponible
+          schema:
+            $ref: '#/definitions/res.Response'
+      summary: Get a single news
+      tags:
+      - news
+  /like_news/{idNews}:
+    post:
+      consumes:
+      - application/json
+      description: Toggle Like news
+      parameters:
+      - description: MongoID
+        in: path
+        name: idNews
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/res.Response'
+        "400":
+          description: Bad path param
+          schema:
+            $ref: '#/definitions/res.Response'
+        "404":
+          description: Noticia no encontrada
+          schema:
+            $ref: '#/definitions/res.Response'
+        "503":
+          description: Service Unavailable - NATS || DB Service Unavailable
+          schema:
+            $ref: '#/definitions/res.Response'
+      summary: Like news
+      tags:
+      - news
+  /new_news:
+    post:
+      consumes:
+      - multipart/form-data
+      description: New news
+      parameters:
+      - in: formData
+        name: body
+        required: true
+        type: string
+      - in: formData
+        maxLength: 500
+        minLength: 3
+        name: headline
+        required: true
+        type: string
+      - format: binary
+        in: formData
+        name: img
+        required: true
+        type: string
+      - in: formData
+        maxLength: 100
+        minLength: 3
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/res.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/smaps.SingleNewsMap'
+              type: object
+        "400":
+          description: El titulo de la noticia ya está en uso
+          schema:
+            $ref: '#/definitions/res.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/res.Response'
+        "503":
+          description: Service Unavailable - NATS || DB Service Unavailable
+          schema:
+            $ref: '#/definitions/res.Response'
+      summary: New news
+      tags:
+      - news
+  /update_news/{idNews}:
+    put:
+      consumes:
+      - application/json
+      description: Update news
+      parameters:
+      - description: MongoID
+        in: path
+        name: idNews
+        required: true
+        type: string
+      - description: Update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/forms.UpdateNewsDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/res.Response'
+            - properties:
+                body:
+                  $ref: '#/definitions/smaps.SingleNewsMap'
+              type: object
+        "400":
+          description: Bad path || body param
+          schema:
+            $ref: '#/definitions/res.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/res.Response'
+        "404":
+          description: Noticia no encontrada
+          schema:
+            $ref: '#/definitions/res.Response'
+      summary: Update news
+      tags:
+      - news
+produces:
+- application/json
+schemes:
+- http
+- https
+securityDefinitions:
+  ApiKeyAuth:
+    description: BearerJWTToken in Authorization Header
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: Service of news
+  name: news
