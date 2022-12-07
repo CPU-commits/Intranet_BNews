@@ -81,11 +81,16 @@ func Init() {
 	docs.SwaggerInfo.Version = "v1"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	// CORS
+	httpOrigin := "http://" + settingsData.CLIENT_URL
+	httpsOrigin := "https://" + settingsData.CLIENT_URL
+
+	fmt.Printf("settingsData.CLIENT_URL: %v\n", settingsData.CLIENT_URL)
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{settingsData.CLIENT_URL},
+		AllowOrigins:     []string{httpOrigin, httpsOrigin},
 		AllowMethods:     []string{"GET", "OPTIONS", "PUT", "DELETE", "POST"},
 		AllowCredentials: true,
 		AllowWebSockets:  false,
+		AllowHeaders:     []string{"*"},
 		MaxAge:           12 * time.Hour,
 	}))
 	// Secure
@@ -103,12 +108,12 @@ func Init() {
 			"X-Fowarded-Proto": "https",
 		},
 	}
-	if settingsData.NODE_ENV == "prod" {
+	/*if settingsData.NODE_ENV == "prod" {
 		secureConfig.AllowedHosts = []string{
 			settingsData.CLIENT_URL,
 			sslUrl,
 		}
-	}
+	}*/
 	router.Use(secure.New(secureConfig))
 	// Rate limit
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
