@@ -42,8 +42,10 @@ func newSettings() *settings {
 }
 
 func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("No .env file found")
+	if os.Getenv("NODE_ENV") != "prod" {
+		if err := godotenv.Load(); err != nil {
+			log.Fatalf("No .env file found")
+		}
 	}
 }
 
