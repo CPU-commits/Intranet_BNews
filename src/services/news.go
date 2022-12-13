@@ -193,13 +193,13 @@ func (n *NewsService) GetSingleNews(slug string, claims *Claims) (*NewsResponse,
 	}
 	if newsData == nil {
 		return nil, &ErrorRes{
-			Err:        fmt.Errorf("No pudimos encontrar la noticia..."),
+			Err:        fmt.Errorf("no pudimos encontrar la noticia"),
 			StatusCode: http.StatusNotFound,
 		}
 	}
 	if !newsData[0].Status {
 		return nil, &ErrorRes{
-			Err:        fmt.Errorf("Esta noticia ya no está disponible"),
+			Err:        fmt.Errorf("esta noticia ya no está disponible"),
 			StatusCode: http.StatusGone,
 		}
 	}
@@ -208,7 +208,7 @@ func (n *NewsService) GetSingleNews(slug string, claims *Claims) (*NewsResponse,
 	if newsType == "student" {
 		if claims.UserType != models.STUDENT && claims.UserType != models.STUDENT_DIRECTIVE {
 			return nil, &ErrorRes{
-				Err:        fmt.Errorf("No tienes acceso a esta noticia"),
+				Err:        fmt.Errorf("no tienes acceso a esta noticia"),
 				StatusCode: http.StatusUnauthorized,
 			}
 		}
@@ -380,7 +380,7 @@ func (n *NewsService) NewNews(
 	cursor.Decode(&findNews)
 	if findNews != nil {
 		return primitive.NilObjectID, &ErrorRes{
-			Err:        fmt.Errorf("El titulo de la noticia ya está en uso"),
+			Err:        fmt.Errorf("el titulo de la noticia ya está en uso"),
 			StatusCode: http.StatusConflict,
 		}
 	}
@@ -431,7 +431,7 @@ func (n *NewsService) UpdateNews(
 	idObjectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, &ErrorRes{
-			Err:        fmt.Errorf("Noticia no encontrada"),
+			Err:        fmt.Errorf("noticia no encontrada"),
 			StatusCode: http.StatusNotFound,
 		}
 	}
@@ -446,7 +446,7 @@ func (n *NewsService) UpdateNews(
 	err = cursorNews.Decode(&findNews)
 	if err != nil {
 		return nil, &ErrorRes{
-			Err:        fmt.Errorf("Noticia no encontrada"),
+			Err:        fmt.Errorf("noticia no encontrada"),
 			StatusCode: http.StatusNotFound,
 		}
 	}
@@ -601,7 +601,7 @@ func (n *NewsService) DeleteNews(
 	}
 	if newsData == nil {
 		return &ErrorRes{
-			Err:        fmt.Errorf("No existe la noticia"),
+			Err:        fmt.Errorf("no existe la noticia"),
 			StatusCode: http.StatusNotFound,
 		}
 	}

@@ -83,8 +83,6 @@ func Init() {
 	// CORS
 	httpOrigin := "http://" + settingsData.CLIENT_URL
 	httpsOrigin := "https://" + settingsData.CLIENT_URL
-
-	fmt.Printf("settingsData.CLIENT_URL: %v\n", settingsData.CLIENT_URL)
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{httpOrigin, httpsOrigin},
 		AllowMethods:     []string{"GET", "OPTIONS", "PUT", "DELETE", "POST"},
