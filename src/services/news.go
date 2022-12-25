@@ -223,6 +223,14 @@ func (n *NewsService) GetNews(
 	newsType string,
 	claims *Claims,
 ) ([]NewsResponse, int, *ErrorRes) {
+	// Recovery if close channel
+	defer func() {
+		recovery := recover()
+		if recovery != nil {
+			fmt.Printf("A channel closed")
+		}
+	}()
+
 	skipNumber, err := strconv.Atoi(skip)
 	if err != nil {
 		return nil, 0, &ErrorRes{
@@ -310,8 +318,11 @@ func (n *NewsService) GetNews(
 	}
 
 	var wg sync.WaitGroup
+	c := make(chan (int), 10)
 	for i := 0; i < len(newsData); i++ {
 		wg.Add(1)
+		c <- 1
+
 		go func(i int, wg *sync.WaitGroup, errRet *error) {
 			defer wg.Done()
 			// Get like user
@@ -341,6 +352,7 @@ func (n *NewsService) GetNews(
 				*errRet = err
 			}
 			newsData[i].Likes = int(count)
+			<-c
 		}(i, &wg, &err)
 	}
 	wg.Wait()

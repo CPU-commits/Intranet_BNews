@@ -14,7 +14,7 @@ import (
 )
 
 func (n *NewsService) UploadNews() {
-	nats.Subscribe("upload_news", func(m *nats_package.Msg) {
+	nats.Queue("upload_news", func(m *nats_package.Msg) {
 		var data stack.NatsGolangReq
 
 		err := json.Unmarshal(m.Data, &data)
