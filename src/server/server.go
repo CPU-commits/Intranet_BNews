@@ -135,7 +135,16 @@ func Init() {
 	})
 	router.Use(mw)
 	// Routes
-	news := router.Group("/api/news", middlewares.JWTMiddleware())
+	news := router.Group(
+		"/api/news",
+		middlewares.JWTMiddleware(),
+		middlewares.MaxSizePerFile(
+			MAX_FILE_SIZE,
+			MAX_FILE_SIZE_STR,
+			MAX_FILES,
+			"img",
+		),
+	)
 	{
 		// Init controllers
 		newsController := new(controllers.NewsController)
