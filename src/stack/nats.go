@@ -2,6 +2,7 @@ package stack
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/CPU-commits/Intranet_BNews/src/settings"
@@ -23,8 +24,13 @@ type NatsGolangReq struct {
 var settingsData = settings.GetSettings()
 
 func newConnection() *nats.Conn {
-	uriNats := fmt.Sprintf("nats://%s:4222", settingsData.NATS_HOST)
-	nc, err := nats.Connect(uriNats)
+	natsHosts := strings.Split(settingsData.NATS_HOST, ",")
+	var natsServers []string
+	for _, natsHost := range natsHosts {
+		uriNats := fmt.Sprintf("nats://%s", natsHost)
+		natsServers = append(natsServers, uriNats)
+	}
+	nc, err := nats.Connect(strings.Join(natsServers, ","))
 	if err != nil {
 		panic(err)
 	}
