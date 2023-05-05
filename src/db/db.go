@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/CPU-commits/Intranet_BNews/src/settings"
 	"go.mongodb.org/mongo-driver/bson"
@@ -49,6 +50,13 @@ func NewConnection(host string, dbName string) *MongoClient {
 		settingsData.MONGO_ROOT_PASSWORD,
 		host,
 	)
+	if settingsData.MONGO_CONNECTION != "mongodb+srv" {
+		uri += fmt.Sprintf(
+			":%s",
+			strconv.Itoa(settingsData.MONGO_PORT),
+		)
+	}
+
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(Ctx, clientOptions)
 	if err != nil {
